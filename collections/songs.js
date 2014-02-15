@@ -1,8 +1,8 @@
 Songs = new Meteor.Collection('songs');
 
 Meteor.methods({
-	fetchFromService: function(userName) {
-		var url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user="+userName+"&api_key="+Meteor.settings.lastfm_apikey+"&format=json";
+	fetchFromService: function(userName, page) {
+		var url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user="+userName+"&api_key="+Meteor.settings.lastfm_apikey+"&page="+page+"&format=json";
 
 		var result = HTTP.get(url, {timeout:30000});
 		if(result.statusCode === 200) {
