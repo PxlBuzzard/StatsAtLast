@@ -7,6 +7,13 @@ Meteor.methods({
 		var result = HTTP.get(url, {timeout:30000});
 		if(result.statusCode === 200) {
 			var respJson = JSON.parse(result.content);
+			console.log(respJson.recenttracks['@attr'].user);
+
+			// grab the metadata about page numbers and update database
+			if (!Accounts.findOne({user: respJson.recenttracks['@attr'].user}))
+				Meteor.call('createNewAccount', respJson.recenttracks['@attr']);
+
+			// go down to track list
 			respJson = respJson.recenttracks.track;
 
 			// clean last fm json
@@ -15,7 +22,6 @@ Meteor.methods({
 				delete respJson[i].artist['#text'];
 			}
 
-			console.log("response received.");
 			return respJson;
 		} else {
 			console.log("Response issue: ", result.statusCode);

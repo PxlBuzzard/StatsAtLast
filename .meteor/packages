@@ -6,3 +6,5 @@
 standard-app-packages
 preserve-inputs
 http
+highcharts-with-exporting
+autopublish

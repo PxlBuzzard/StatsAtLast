@@ -12,7 +12,7 @@ Template.hello.events({
                 window.alert("Error: " + err.reason);
                 console.log("error occured on receiving data on server. ", err);
             } else if(respJson) {
-                console.log("respJson: ", respJson);
+                //console.log("respJson: ", respJson);
                 page++;
                 //window.alert(respJson.length + ' tracks received.');
                 if(Session.get('recentTracks'))
@@ -32,3 +32,68 @@ Template.hello.recentTracks = function () {
 Template.hello.userName = function() {
     return userName;
 };
+
+Template.hello.accounts = function() {
+    return Accounts.find();
+};
+
+Template.hello.accountCount = function() {
+    return Accounts.find().count();
+};
+
+Template.hello.graph = $(function () {
+
+    // Get the JSON and create the chart
+    json = {};
+    for(var i = 0; i < Session.get('recentTracks').length; ++i) {
+        //json.push({ Session.get('recentTracks')[i].date.uts });
+        //json[i] = Session.get('recentTracks')[i].date.uts;
+
+        //json[Session.get('recentTracks').artist['#text']] +=  (1 / Session.get('recentTracks').length) * 100;
+    }
+
+    
+    $('#chart-graph').highcharts({
+
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: 'Browser market shares at a specific website, 2010'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Bands and such',
+            data: [
+                ['Firefox',   45.0],
+                ['IE',       26.8],
+                {
+                    name: 'Chrome',
+                    y: 12.8,
+                    sliced: true,
+                    selected: true
+                },
+                ['Safari',    8.5],
+                ['Opera',     6.2],
+                ['Others',   0.7]
+            ]
+        }]
+    });
+});

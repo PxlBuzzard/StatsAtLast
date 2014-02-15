@@ -2,10 +2,20 @@
   <h3>Meteor: Last.FM check</h3>
   <input type="text" id="userName" value="{{userName}}"></input>
   <input type="button" value="Fetch" id="fetchButton" />
- 
-<ul>
-  {{#each recentTracks}}
-    <li>{{name}}, {{artist.text}}</li>
-  {{/each}}
-</ul>
+
+  <div id="chart-graph"></div>
+
+  <h2>Users List</h2> {{ accountCount }}
+  <ul>
+    {{#each accounts}}
+      <li>{{user}}</li>
+    {{/each}}
+  </ul>
+
+  <h2>Recent Tracks</h2>
+  <ul>
+    {{#each recentTracks}}
+      <li>{{name}}, {{artist.text}}</li>
+    {{/each}}
+  </ul>
 </template>
