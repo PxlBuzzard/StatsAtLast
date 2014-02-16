@@ -1,24 +1,20 @@
 var userName = "Pxl_Buzzard";
 var page = 1;
+var amount = 10;
+var graphData = [];
 
 Template.hello.events({
     'click #fetchButton': function (e) {
         e.preventDefault();
-        console.log("Recent tracks from last.fm!");
         $('#fetchButton').attr('disabled', 'true').val('loading...');
+
         userName = $('#userName').val();
-        Meteor.call('fetchFromService', userName, page, function (err, respJson) {
+        Meteor.call('fetchFromService', userName, page, amount, function (err, respJson) {
             if (err) {
-                window.alert("Error: " + err.reason);
                 console.log("error occured on receiving data on server. ", err);
             } else if(respJson) {
-                //console.log("respJson: ", respJson);
                 page++;
-                //window.alert(respJson.length + ' tracks received.');
-                if(Session.get('recentTracks'))
-                    Session.set("recentTracks", Session.get('recentTracks').concat(respJson));
-                else
-                    Session.set("recentTracks", respJson);
+                Meteor.call('addSongs', respJson, userName, function (err, respJson) { });
             }
             $('#fetchButton').removeAttr('disabled').val('Fetch');
         });
@@ -26,7 +22,7 @@ Template.hello.events({
 });
 
 Template.hello.recentTracks = function () {
-    return Session.get("recentTracks") || [];
+    return Songs.find() || [];
 };
 
 Template.hello.userName = function() {
@@ -34,25 +30,39 @@ Template.hello.userName = function() {
 };
 
 Template.hello.accounts = function() {
-    return Accounts.find();
+    return Accounts.find() || [];
 };
 
 Template.hello.accountCount = function() {
-    return Accounts.find().count();
+    return Accounts.find().count() || -1;
 };
 
-Template.hello.graph = $(function () {
+Template.hello.rendered = function () {
 
-    // Get the JSON and create the chart
-    json = {};
-    for(var i = 0; i < Session.get('recentTracks').length; ++i) {
+    // Let's whip that data into shape
+    //graphData = {};
+    //for(var i = 0; i < Songs.find().count(); ++i) {
         //json.push({ Session.get('recentTracks')[i].date.uts });
         //json[i] = Session.get('recentTracks')[i].date.uts;
 
         //json[Session.get('recentTracks').artist['#text']] +=  (1 / Session.get('recentTracks').length) * 100;
-    }
 
-    
+        /*if(graphData.indexOf(Songs.find()[i]) > -1 ) {
+            graphData
+        } else {
+            graphData.push([ Songs.find()[i].name, (1 / Songs.find().count() ) ]);
+        }*/
+    //}
+
+    var uniqueArtists = [];
+    Songs.distinct('artist.text', function(error, result) {
+        uniqueArtists = result;
+
+        for(var i = 0; i < uniqueArtists.length; ++i) {
+            graphData.push([ uniqueArtists[i], (1.0 / Songs.find({ 'artist.text': uniqueArtists[i] }).count() * 100.0 ) ]);
+        }
+    });
+
     $('#chart-graph').highcharts({
 
         chart: {
@@ -61,7 +71,7 @@ Template.hello.graph = $(function () {
             plotShadow: false
         },
         title: {
-            text: 'Browser market shares at a specific website, 2010'
+            text: 'Most recent ' + Songs.find().count() + ' songs played'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -80,20 +90,8 @@ Template.hello.graph = $(function () {
         },
         series: [{
             type: 'pie',
-            name: 'Bands and such',
-            data: [
-                ['Firefox',   45.0],
-                ['IE',       26.8],
-                {
-                    name: 'Chrome',
-                    y: 12.8,
-                    sliced: true,
-                    selected: true
-                },
-                ['Safari',    8.5],
-                ['Opera',     6.2],
-                ['Others',   0.7]
-            ]
+            name: 'Percent of plays',
+            data: graphData
         }]
     });
-});
+};
