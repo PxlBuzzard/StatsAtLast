@@ -1,7 +1,7 @@
 var userName = "Pxl_Buzzard";
 var page = 1;
 var amount = 10;
-var graphData = [];
+graphData = [];
 
 Template.hello.events({
     'click #fetchButton': function (e) {
@@ -39,27 +39,10 @@ Template.hello.accountCount = function() {
 
 Template.hello.rendered = function () {
 
-    // Let's whip that data into shape
-    //graphData = {};
-    //for(var i = 0; i < Songs.find().count(); ++i) {
-        //json.push({ Session.get('recentTracks')[i].date.uts });
-        //json[i] = Session.get('recentTracks')[i].date.uts;
-
-        //json[Session.get('recentTracks').artist['#text']] +=  (1 / Session.get('recentTracks').length) * 100;
-
-        /*if(graphData.indexOf(Songs.find()[i]) > -1 ) {
-            graphData
-        } else {
-            graphData.push([ Songs.find()[i].name, (1 / Songs.find().count() ) ]);
-        }*/
-    //}
-
-    var uniqueArtists = [];
+    // Get a list of all unique artists
     Songs.distinct('artist.text', function(error, result) {
-        uniqueArtists = result;
-
-        for(var i = 0; i < uniqueArtists.length; ++i) {
-            graphData.push([ uniqueArtists[i], (1.0 / Songs.find({ 'artist.text': uniqueArtists[i] }).count() * 100.0 ) ]);
+        for(var i = 0; i < result.length; ++i) {
+            graphData.push([ result[i], ( Songs.find({ 'artist.text': result[i] }).count() / Songs.find().count() * 100.0 ) ]);
         }
     });
 
