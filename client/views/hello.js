@@ -1,6 +1,5 @@
 var userName = "Pxl_Buzzard";
-var page = 1;
-var amount = 10;
+var amount = 9;
 var chart = null;
 graphData = [];
 
@@ -10,16 +9,29 @@ Template.hello.events({
         $('#fetchButton').attr('disabled', 'true').val('loading...');
 
         userName = $('#userName').val();
-        Meteor.call('fetchFromService', userName, page, amount, function (err, respJson) {
+        Meteor.call('fetchFromService', userName, amount, function (err, respJson) {
             if (err) {
                 console.log("error occured on receiving data on server. ", err);
             } else if(respJson) {
-                page++;
                 Meteor.call('addSongs', respJson, userName, function (err, respJson) { });
             }
             $('#fetchButton').removeAttr('disabled').val('Fetch');
         });
+    },
+
+    'click #resetButton': function (e) {
+        e.preventDefault();
+        $('#resetButton').attr('disabled', 'true').val('clearing...');
+
+        userName = $('#userName').val();
+        Meteor.call('resetSongs', userName, function (err, respJson) {
+            if (err) {
+                console.log("error occured on receiving data on server. ", err);
+            }
+            $('#resetButton').removeAttr('disabled').val('Reset');
+        });
     }
+
 });
 
 Template.hello.recentTracks = function () {
