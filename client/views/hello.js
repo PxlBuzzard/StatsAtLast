@@ -1,6 +1,7 @@
 var userName = "Pxl_Buzzard";
 var page = 1;
 var amount = 10;
+var chart = null;
 graphData = [];
 
 Template.hello.events({
@@ -38,15 +39,18 @@ Template.hello.accountCount = function() {
 };
 
 Template.hello.rendered = function () {
-
     // Get a list of all unique artists
     Songs.distinct('artist.text', function(error, result) {
+        // Reset graphData
+        graphData = [];
+
         for(var i = 0; i < result.length; ++i) {
             graphData.push([ result[i], ( Songs.find({ 'artist.text': result[i] }).count() / Songs.find().count() * 100.0 ) ]);
         }
     });
 
-    $('#chart-graph').highcharts({
+    // Make that chart
+    chart = $('#chart-graph').highcharts({
 
         chart: {
             plotBackgroundColor: null,
