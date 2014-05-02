@@ -2,6 +2,8 @@
 
 Chart and graph your Last.FM listening history. Built with [Meteor](http://meteor.com).
 
+![Pie graph of recent history](https://cloud.githubusercontent.com/assets/512416/2858833/0e0b6524-d192-11e3-98ca-07de66ddd9b6.png)
+
 ## To Run Your Own Copy
 
 Prerequisites:
